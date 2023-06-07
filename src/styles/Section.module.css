@@ -1,0 +1,52 @@
+.sectionContainer {
+    margin-block: 1rem;
+    margin-inline: 2rem;
+}
+
+.container {
+    /* margin-inline: 1rem; */
+    display: inline-flex;
+    overflow-x: scroll;
+    gap: 1rem;
+    width: 100%;
+}
+
+.container::-webkit-scrollbar {
+    display: none;
+}
+
+.container img {
+    width: 270px;
+    height: auto;
+    object-fit: cover;
+}
+
+.heading {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+@media screen and (max-width:900px) and (min-width:451px) {
+    .container img {
+        width: 200px;
+    }
+
+    .heading {
+        font-size: 1.2rem;
+    }
+}
+
+@media screen and (max-width:450px) {
+    .container img {
+        width: 170px;
+    }
+
+    .heading {
+        font-size: 0.9rem;
+    }
+
+    .sectionContainer {
+        margin-inline: 1rem;
+    }
+}
