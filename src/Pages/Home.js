@@ -5,9 +5,12 @@ import Section from "../components/Section";
 import Slider from "../components/Slider";
 import Footer from "../components/Footer";
 import SideBar from "../components/SideBar";
+import { genreList, exits } from "../utils/genreList";
+import { addMovie, deleteMovie } from "../actions/actions";
+import { connect } from "react-redux";
 
-const Home = () => {
-  const [movies, setMovies] = useState([]);
+export const Home = ({ Images, addMovie, deleteMovie }) => {
+  const [moviesData, setMoviesData] = useState([]);
   const [sliderMovies, setSliderMovies] = useState([]);
 
   const { data, isPending, error } = useFetch("http://localhost:8000/movies");
@@ -16,12 +19,42 @@ const Home = () => {
     const tempList = [];
     const sliderList = [];
     if (data && data.length) {
-      for (const { cardImg, backgroundImg } of data) {
-        tempList.push({ image: cardImg });
-        sliderList.push({ image: backgroundImg });
+      for (const obj of data) {
+        var genres = genreList(obj);
+
+        for (const genre of genres) {
+          var pos = exits(genre, tempList);
+          if (pos > 0) {
+            tempList[pos].list.push({
+              image: obj.cardImg,
+              id: obj.id,
+            });
+          } else {
+            tempList.push({
+              name: genre,
+              list: [
+                {
+                  image: obj.cardImg,
+                  id: obj.id,
+                },
+              ],
+            });
+          }
+        }
       }
     }
-    setMovies(tempList);
+    setMoviesData(tempList);
+    for (const obj of tempList) {
+      for (const { image, id } of obj.list) {
+        if (exits(image, sliderList) < 0) {
+          sliderList.push({
+            image: image,
+            id: id,
+          });
+          break;
+        }
+      }
+    }
     setSliderMovies(sliderList);
   }, [data]);
   return (
@@ -32,23 +65,33 @@ const Home = () => {
           Something went wrong. Try again later
         </div>
       )}
-      {/* <div style={{ display: "flex", flexDirection: "row" }}>
-        <SideBar />
-        <div style={{ width: "calc(100vw - 40px)" }}> */}
       {isPending && <div style={{ color: "#fff" }}>Loading...</div>}
       {!isPending && !error && (
         <>
-          <Slider images={sliderMovies} />
-          <Section SectionName={"Recommended For You"} MovieList={movies} />
-          <Section SectionName={"Trending And Latest"} MovieList={movies} />
-          <Section SectionName={"Action"} MovieList={movies} />
+          {sliderMovies.length && <Slider images={sliderMovies} />}
+          {Images.length && (
+            <Section SectionName={"Favourites"} MovieList={Images} />
+          )}
+          {moviesData.length &&
+            moviesData.map(({ name, list }, index) => (
+              <Section SectionName={name} key={index} MovieList={list} />
+            ))}
         </>
       )}
-      {/* </div>
-      </div> */}
       <Footer />
     </div>
   );
 };
 
-export default Home;
+const mapStateToProps = (state) => {
+  return {
+    Images: state,
+  };
+};
+
+const mapDispatchToProps = {
+  addMovie: addMovie,
+  deleteMovie: deleteMovie,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

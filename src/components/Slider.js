@@ -17,7 +17,7 @@ const Slider = ({ images }) => {
 
   return (
     <div className={styles.slider}>
-      <Link to={"/home/1"}>
+      <Link to={`/home/${images[currentIndex].id}`}>
         <div className={styles["slider-images"]}>
           {images && images.length && (
             <img

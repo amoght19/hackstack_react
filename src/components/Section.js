@@ -9,9 +9,9 @@ const Section = ({ SectionName, MovieList }) => {
       <div className={styles.container}>
         {MovieList &&
           MovieList.length &&
-          MovieList.map(({ image }, index) => (
-            <Link to={"/home/1"}>
-              <img src={image} alt="poster" key={index}></img>
+          MovieList.map(({ image, id }, index) => (
+            <Link to={`/home/${id}`} key={index}>
+              <img src={image} alt="poster"></img>
             </Link>
           ))}
       </div>
